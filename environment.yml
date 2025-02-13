@@ -1,0 +1,13 @@
+name: nara
+channels:
+  - conda-forge
+dependencies:
+  - ipykernel
+  - pandas
+  - python=3.13
+  - python-benedict
+  - python-dotenv
+  - requests
+  - tqdm
+
+prefix: "nara-manifests/envs"
