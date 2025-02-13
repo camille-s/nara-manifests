@@ -1,0 +1,6 @@
+coastwise slave manifests,2554808
+slave manifests,5573655
+manifests,4492378
+reports of slaves on ships,866763
+vessel manifests of enslaved persons transported through the port of new york,7821181
+manifests of enslaved persons,875814
