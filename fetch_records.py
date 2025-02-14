@@ -178,11 +178,17 @@ def fetch_records(id: str,
     resp = requests.get(url, headers=hdrs, params=prms)
     # print(f'Request status: {resp.status_code}')
     resp.raise_for_status()
+    # compare total record count to limit, print message if limit is lower
+    resp_json = resp.json()
+    json_bene = benedict(resp_json)
+    total = int(json_bene[['body', 'hits', 'total', 'value']]) # type: ignore
+    if total > limit:
+        print(f'Warning: series {id} has {total} records, but limit is set to {limit}.')
 
     with open(json_out, 'w') as file:
-        json.dump(resp.json(), file)
+        json.dump(resp_json, file)
         print(f'Results written to {json_out}')
-    return benedict(resp.json())
+    return json_bene
 
 
 def get_args() -> tuple[str, int, bool]:
