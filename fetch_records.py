@@ -11,17 +11,18 @@
 # api docs: https://catalog.archives.gov/api/v2/api-docs/
 # also listed in aws open data registry https://registry.opendata.aws/nara-national-archives-catalog/
 
-import requests
-import pandas as pd
-from dotenv import load_dotenv
-import os
-import json
-from benedict import benedict
-from pathlib import Path
-import re
-import multiprocessing
-from tqdm.contrib.concurrent import process_map
 import argparse
+import json
+import multiprocessing
+import os
+import re
+from pathlib import Path
+
+import pandas as pd
+import requests
+from benedict import benedict
+from dotenv import load_dotenv
+from tqdm.contrib.concurrent import process_map
 
 num_cpu = multiprocessing.cpu_count() - 1
 
@@ -96,9 +97,10 @@ def prep_dirs(base_output: str, id: str, title: str) -> Path:
     Returns:
         Path: Returns path to the collection's directory
     '''
+    # ensure short enough for file name--ID will keep deidentified
     title = to_snake_case(title)
     direc_name = f'{id}_{title}'
-    direc_path = Path(base_output) / direc_name
+    direc_path = Path(base_output) / direc_name[0:255]
     direc_path.mkdir(parents=True, exist_ok=True)
     return direc_path
 
@@ -181,9 +183,10 @@ def fetch_records(id: str,
     # compare total record count to limit, print message if limit is lower
     resp_json = resp.json()
     json_bene = benedict(resp_json)
-    total = int(json_bene[['body', 'hits', 'total', 'value']]) # type: ignore
+    total = int(json_bene[['body', 'hits', 'total', 'value']])  # type: ignore
     if total > limit:
-        print(f'Warning: series {id} has {total} records, but limit is set to {limit}.')
+        print(f'Warning: series {id} has {
+              total} records, but limit is set to {limit}.')
 
     with open(json_out, 'w') as file:
         json.dump(resp_json, file)
